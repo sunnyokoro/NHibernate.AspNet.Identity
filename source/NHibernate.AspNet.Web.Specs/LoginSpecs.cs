@@ -49,7 +49,7 @@ namespace NHibernate.AspNet.Web.Specs
 		{
 			protected override void Given()
 			{
-                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(NHibernateSession.Current));
+                var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(NHibernateSession.Current));
                 using (var transaction = new TransactionScope())
                 {
                     var user = new ApplicationUser() { UserName = "RealUserName" };

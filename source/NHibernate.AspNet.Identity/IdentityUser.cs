@@ -7,7 +7,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace NHibernate.AspNet.Identity
 {
-    public class IdentityUser : EntityWithTypedId<string>, IUser
+    public class IdentityUser : EntityWithTypedId<int>, IUser<int>
     {
         public virtual int AccessFailedCount { get; set; }
 
@@ -56,7 +56,7 @@ namespace NHibernate.AspNet.Identity
         public IdentityUserMap()
         {
             this.Table("AspNetUsers");
-            this.Id(x => x.Id, m => m.Generator(new UUIDHexCombGeneratorDef("D")));
+            this.Id(x => x.Id, m => m.Generator(Generators.Native));
 
             this.Property(x => x.AccessFailedCount);
 

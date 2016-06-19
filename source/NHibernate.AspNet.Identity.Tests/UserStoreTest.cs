@@ -87,7 +87,7 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void WhenCeateUserAsync()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(_session));
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(_session));
             var user = new ApplicationUser() { UserName = "RealUserName" };
 
             using (var transaction = new TransactionScope())
@@ -218,7 +218,7 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void LockoutAccount()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(this._session));
             userManager.MaxFailedAccessAttemptsBeforeLockout = 3;
             userManager.UserLockoutEnabledByDefault = true;
             userManager.DefaultAccountLockoutTimeSpan = new TimeSpan(0, 10, 0);
@@ -236,7 +236,7 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void FindByName()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
+            var userManager = new UserManager<ApplicationUser,int>(new UserStore<ApplicationUser>(this._session));
             userManager.Create(new ApplicationUser() { UserName = "test", Email = "aaa@bbb.com", EmailConfirmed = true }, "Welcome");
             var x = userManager.FindByName("tEsT");
             Assert.IsNotNull(x);
@@ -246,8 +246,8 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void FindByNameWithRoles()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(this._session));
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(this._session));
+            var roleManager = new RoleManager<IdentityRole, int>(new RoleStore<IdentityRole>(this._session));
             roleManager.Create(new IdentityRole("Admin"));
             roleManager.Create(new IdentityRole("AO"));
             var user = new ApplicationUser() { UserName = "test", Email = "aaa@bbb.com", EmailConfirmed = true };
@@ -266,7 +266,7 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void FindByEmail()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(this._session));
             userManager.Create(new ApplicationUser() { UserName = "test", Email = "aaa@bbb.com", EmailConfirmed = true }, "Welcome");
             var x = userManager.FindByEmail("AaA@bBb.com");
             Assert.IsNotNull(x);
@@ -276,7 +276,7 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void AddClaim()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(this._session));
             var user = new ApplicationUser() { UserName = "test", Email = "aaa@bbb.com", EmailConfirmed = true };
             userManager.Create(user, "Welcome");
             userManager.AddClaim(user.Id, new Claim(ClaimTypes.Role, "Admin"));
@@ -286,8 +286,8 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void EmailConfirmationToken()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
-            userManager.UserTokenProvider = new EmailTokenProvider<ApplicationUser, string>() { BodyFormat = "xxxx {0}", Subject = "Reset password" };
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(this._session));
+            userManager.UserTokenProvider = new EmailTokenProvider<ApplicationUser, int>() { BodyFormat = "xxxx {0}", Subject = "Reset password" };
             userManager.Create(new ApplicationUser() { UserName = "test", Email = "aaa@bbb.com", EmailConfirmed = false }, "Welcome");
             var x = userManager.FindByEmail("aaa@bbb.com");
             string token = userManager.GeneratePasswordResetToken(x.Id);
@@ -297,8 +297,8 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void FindByEmailAggregated()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(this._session));
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(this._session));
+            var roleManager = new RoleManager<IdentityRole, int>(new RoleStore<IdentityRole>(this._session));
             userManager.Create(new ApplicationUser() { UserName = "test", Email = "aaa@bbb.com", EmailConfirmed = true }, "Welcome");
             var x = userManager.FindByEmail("aaa@bbb.com");
             roleManager.CreateAsync(new IdentityRole("Admin"));
@@ -317,8 +317,8 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void CreateWithoutCommitingTransactionScopeShouldNotInsertRows()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(this._session));
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(this._session));
+            var roleManager = new RoleManager<IdentityRole, int>(new RoleStore<IdentityRole>(this._session));
             using (var ts = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
                 // session is not opened inside the scope so we need to enlist it manually
@@ -338,8 +338,8 @@ namespace NHibernate.AspNet.Identity.Tests
         [TestMethod]
         public void CreateWithoutCommitingNHibernateTransactionShouldNotInsertRows()
         {
-            var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(this._session));
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(this._session));
+            var userManager = new UserManager<ApplicationUser, int>(new UserStore<ApplicationUser>(this._session));
+            var roleManager = new RoleManager<IdentityRole, int>(new RoleStore<IdentityRole>(this._session));
             using (var ts = _session.BeginTransaction())
             {
                 userManager.Create(new ApplicationUser() { UserName = "test", Email = "aaa@bbb.com", EmailConfirmed = true }, "Welcome1");

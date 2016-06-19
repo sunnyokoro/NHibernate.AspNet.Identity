@@ -6,7 +6,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace NHibernate.AspNet.Identity
 {
-    public class IdentityRole : EntityWithTypedId<string>, IRole
+    public class IdentityRole : EntityWithTypedId<int>, IRole<int>
     {
         public virtual string Name { get; set; }
 
@@ -28,7 +28,7 @@ namespace NHibernate.AspNet.Identity
         public IdentityRoleMap()
         {
             this.Table("AspNetRoles");
-            this.Id(x => x.Id, m => m.Generator(new UUIDHexCombGeneratorDef("D")));
+            this.Id(x => x.Id, m => m.Generator(Generators.Native));
             this.Property(x => x.Name, map =>
             {
                 map.Length(255);

@@ -15,7 +15,7 @@ namespace NHibernate.AspNet.Identity
     /// Implements IUserStore using NHibernate where TUser is the entity type of the user being stored
     /// </summary>
     /// <typeparam name="TUser"/>
-    public class UserStore<TUser> : IUserLoginStore<TUser>, IUserClaimStore<TUser>, IUserRoleStore<TUser>, IUserPasswordStore<TUser>, IUserSecurityStampStore<TUser>, IQueryableUserStore<TUser>, IUserStore<TUser>, IUserLockoutStore<TUser, string>, IUserEmailStore<TUser>, IUserPhoneNumberStore<TUser>, IUserTwoFactorStore<TUser, string>, IDisposable where TUser : IdentityUser
+    public class UserStore<TUser> : IUserLoginStore<TUser, int>, IUserClaimStore<TUser, int>, IUserRoleStore<TUser, int>, IUserPasswordStore<TUser, int>, IUserSecurityStampStore<TUser, int>, IQueryableUserStore<TUser, int>, IUserStore<TUser, int>, IUserLockoutStore<TUser, int>, IUserEmailStore<TUser, int>, IUserPhoneNumberStore<TUser, int>, IUserTwoFactorStore<TUser, int>, IDisposable where TUser : IdentityUser
     {
         private bool _disposed;
 
@@ -40,15 +40,39 @@ namespace NHibernate.AspNet.Identity
         public virtual Task<TUser> FindByIdAsync(string userId)
         {
             this.ThrowIfDisposed();
-            //return Task.FromResult(this.Context.Get<TUser>((object)userId));
-            return this.GetUserAggregateAsync((TUser u) => u.Id.Equals(userId));
+            return Task.FromResult(this.Context.Get<TUser>((object)userId));
+            //return this.GetUserAggregateAsync((TUser u) => u.Id.Equals(userId));
+        }
+
+
+        public virtual Task<TUser> FindByIdAsync(int userId)
+        {
+            this.ThrowIfDisposed();
+            return Task.FromResult(this.Context.Get<TUser>((object)userId));
+            //return this.GetUserAggregateAsync((TUser u) => u.Id.Equals(userId));
         }
 
         public virtual Task<TUser> FindByNameAsync(string userName)
         {
             this.ThrowIfDisposed();
-            //return Task.FromResult<TUser>(Queryable.FirstOrDefault<TUser>(Queryable.Where<TUser>(this.Context.Query<TUser>(), (Expression<Func<TUser, bool>>)(u => u.UserName.ToUpper() == userName.ToUpper()))));
-            return this.GetUserAggregateAsync((TUser u) => u.UserName.ToUpper() == userName.ToUpper());
+            return Task.FromResult<TUser>(Queryable.FirstOrDefault<TUser>(Queryable.Where<TUser>(this.Context.Query<TUser>(), (Expression<Func<TUser, bool>>)(u => u.UserName.ToUpper() == userName.ToUpper()))));
+            //return this.GetUserAggregateAsync((TUser u) => u.UserName.ToUpper() == userName.ToUpper());
+        }
+
+        public virtual Task<TUser> FindByEmailAsync(string email)
+        {
+            this.ThrowIfDisposed();
+
+            //his
+            //return this.GetUserAggregateAsync((TUser u) => u.Email.ToUpper() == email.ToUpper());
+
+            //mine
+            //return this.GetUserAggregateAsync((TUser u) => u.Id.Equals(userId));
+            return
+                Task.FromResult(
+                    Queryable.FirstOrDefault(Queryable.Where(this.Context.Query<TUser>(),
+                        (u => u.Email.ToUpper() == email.ToUpper()))));
+
         }
 
         public virtual Task CreateAsync(TUser user)
@@ -280,7 +304,7 @@ namespace NHibernate.AspNet.Identity
                 throw new InvalidOperationException(string.Format((IFormatProvider)CultureInfo.CurrentCulture, Resources.RoleNotFound, new object[1] { (object)role }));
             }
             user.Roles.Add(identityRole);
-      
+
             return Task.FromResult<int>(0);
 
         }
@@ -491,11 +515,7 @@ namespace NHibernate.AspNet.Identity
             return Task.FromResult<int>(0);
         }
 
-        public virtual Task<TUser> FindByEmailAsync(string email)
-        {
-            this.ThrowIfDisposed();
-            return this.GetUserAggregateAsync((TUser u) => u.Email.ToUpper() == email.ToUpper());
-        }
+
 
         public virtual Task<string> GetEmailAsync(TUser user)
         {

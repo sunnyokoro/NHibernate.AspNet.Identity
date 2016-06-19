@@ -7,7 +7,7 @@ using NHibernate.Linq;
 
 namespace NHibernate.AspNet.Identity
 {
-    public class RoleStore<TRole> : IQueryableRoleStore<TRole>, IRoleStore<TRole>, IDisposable where TRole : IdentityRole
+    public class RoleStore<TRole> : IQueryableRoleStore<TRole, int>, IRoleStore<TRole, int>, IDisposable where TRole : IdentityRole
     {
         private bool _disposed;
 
@@ -28,6 +28,12 @@ namespace NHibernate.AspNet.Identity
         }
 
         public virtual Task<TRole> FindByIdAsync(string roleId)
+        {
+            this.ThrowIfDisposed();
+            return Task.FromResult(Context.Get<TRole>((object)roleId));
+        }
+
+        public virtual Task<TRole> FindByIdAsync(int roleId)
         {
             this.ThrowIfDisposed();
             return Task.FromResult(Context.Get<TRole>((object)roleId));
